@@ -1,20 +1,3 @@
-AWSTemplateFormatVersion: '2010-09-09'
-Description: 'Basic EC2 Instance'
-
-Parameters:
-  KeyName:
-    Type: AWS::EC2::KeyPair::KeyName
-    Description: Existing EC2 KeyPair name
-
-Resources:
-  MyInstance:
-    Type: AWS::EC2::Instance
-    Properties:
-      ImageId: ami-03c4f11b50838ab5d
-      InstanceType: t2.micro
-      BlockDeviceMappings:
-        - DeviceName: /dev/xvda
-          Ebs:
-            VolumeType: gp3
-            VolumeSize: 8
-            DeleteOnTermination: false
+template-file-path: template.yaml
+parameters: {}
+tags: {}

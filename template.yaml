@@ -34,11 +34,11 @@ Resources:
       Tags:
         - Key: Name
           Value: Kuma-Data
-          
+
   VolumeAttachment:
     Type: AWS::EC2::VolumeAttachment
     Properties:
-      InstanceId: !Ref MyInstance
+      InstanceId: !Ref Host
       VolumeId: !If [UseExistingVolume, !Ref VolumeId, !Ref DataVolume]
       Device: /dev/sdf
 

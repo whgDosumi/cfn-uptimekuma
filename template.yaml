@@ -2,6 +2,10 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: 'Basic EC2 Instance'
 
 Parameters:
+  KeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: Existing EC2 KeyPair name
+    Default: Desktop
   VolumeSize:
     Type: Number
     Default: 1

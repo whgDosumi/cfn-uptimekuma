@@ -10,6 +10,7 @@ Resources:
   MyInstance:
     Type: AWS::EC2::Instance
     Properties:
+      KeyName: !Ref KeyName
       ImageId: ami-03c4f11b50838ab5d
       InstanceType: t2.micro
       BlockDeviceMappings:

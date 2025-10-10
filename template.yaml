@@ -2,20 +2,44 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: 'Basic EC2 Instance'
 
 Parameters:
-  KeyName:
-    Type: AWS::EC2::KeyPair::KeyName
-    Description: Existing EC2 KeyPair name
+  VolumeSize:
+    Type: Number
+    Default: 1
+    Description: Size of the docker volume storage in gb
+  VolumeId:
+    Type: String
+    Default: ""
 
 Resources:
-  MyInstance:
+  Host:
     Type: AWS::EC2::Instance
     Properties:
-      KeyName: !Ref KeyName
       ImageId: ami-03c4f11b50838ab5d
       InstanceType: t2.micro
+      KeyName: !Ref KeyName
       BlockDeviceMappings:
         - DeviceName: /dev/xvda
           Ebs:
             VolumeType: gp3
             VolumeSize: 8
-            DeleteOnTermination: false
+            DeleteOnTermination: true
+  DataVolume:
+    Type: AWS::EC2::Volume
+    Condition: CreateVolume
+    Properties:
+      Size: !Ref VolumeSize
+      VolumeType: gp3
+      AvailabilityZone: !GetAtt Host.AvailabilityZone
+      Tags:
+        - Key: Name
+          Value: Kuma-Data
+  VolumeAttachment:
+    Type: AWS::EC2::VolumeAttachment
+    Properties:
+      InstanceId: !Ref MyInstance
+      VolumeId: !If [UseExistingVolume, !Ref VolumeId, !Ref DataVolume]
+      Device: /dev/sdf
+
+Conditions:
+  CreateVolume: !Equals [!Ref VolumeId, '']
+  UseExistingVolume: !Not [!Equals [!Ref VolumeId, '']]

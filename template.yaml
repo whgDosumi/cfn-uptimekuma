@@ -23,6 +23,7 @@ Resources:
             VolumeType: gp3
             VolumeSize: 8
             DeleteOnTermination: true
+
   DataVolume:
     Type: AWS::EC2::Volume
     Condition: CreateVolume
@@ -33,6 +34,7 @@ Resources:
       Tags:
         - Key: Name
           Value: Kuma-Data
+          
   VolumeAttachment:
     Type: AWS::EC2::VolumeAttachment
     Properties:

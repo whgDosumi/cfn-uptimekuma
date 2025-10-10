@@ -1,4 +1,3 @@
 template-file-path: template.yaml
-parameters:
-  KeyName: Desktop
-  VolumeId: vol-036074c98c71398ab
+parameters: {}
+tags: {}

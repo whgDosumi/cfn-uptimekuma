@@ -1,36 +1,76 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'Basic EC2 Instance'
+Description: 'Uptime Kuma Host Stack'
 
 Parameters:
-  KeyName:
+  KeyName: # SSH Keypair
     Type: AWS::EC2::KeyPair::KeyName
     Description: Existing EC2 KeyPair name
     Default: Desktop
-  VolumeSize:
+  VolumeSize: # Storage for container volumes. Persisting data.
     Type: Number
     Default: 1
     Description: Size of the docker volume storage in gb
-  VolumeId:
+  VolumeId: # ID of the persisting storage volume once it's generated. Define it after the first run.
     Type: String
     Default: ""
+  MyIP:
+    Type: String
+    Description: IP for limiting SSH access.
+    Default: 0.0.0.0/0
 
 Resources:
-  Host:
+  Host: # EC2 Instance, will run the container(s)
     Type: AWS::EC2::Instance
     Properties:
-      ImageId: ami-03c4f11b50838ab5d
+      SecurityGroupIds: [!Ref SecurityGroup]
+      ImageId: ami-03c4f11b50838ab5d # TODO: Make this somehow get the latest version?
       InstanceType: t2.micro
       KeyName: !Ref KeyName
-      BlockDeviceMappings:
+      PropagateTagsToVolumeOnCreation: true
+      BlockDeviceMappings: # Storage device for OS
         - DeviceName: /dev/xvda
           Ebs:
             VolumeType: gp3
             VolumeSize: 8
             DeleteOnTermination: true
+      Tags:
+        - Key: Name
+          Value: UptimeHost
+  
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: SSH access
+      SecurityGroupIngress:
+        - IpProtocol: tcp # Limit SSH if MyIP property defined, defaults to fully open.
+          FromPort: 22
+          ToPort: 22
+          CidrIp: !Ref MyIP
+        - IpProtocol: tcp # Allow HTTPS
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: UptimeSG
+  
+  EIP: # Elastic Static IP for Host
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: UptimeEIP
+  
+  EIPAssociation: # Associates the EIP to our host.
+    Type: AWS::EC2::EIPAssociation
+    Properties:
+      InstanceId: !Ref Host
+      EIP: !Ref EIP
 
   DataVolume:
     Type: AWS::EC2::Volume
-    Condition: CreateVolume
+    Condition: CreateVolume # See conditions below, volume is not created if one is specified.
     Properties:
       Size: !Ref VolumeSize
       VolumeType: gp3

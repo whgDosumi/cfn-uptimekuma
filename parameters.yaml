@@ -1,4 +1,4 @@
 template-file-path: template.yaml
 parameters:
   KeyName: Desktop
-  VolumeId: vol-036074c98c71398ab
+  MyIP: 24.126.93.247/32

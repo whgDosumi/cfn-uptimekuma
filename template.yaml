@@ -44,7 +44,7 @@ Resources:
           systemctl start docker
           systemctl enable docker
 
-          if ! blkid "xvdf" > /dev/null 2>&1; then # Make filesystem if one doesn't exist
+          if ! blkid /dev/xvdf > /dev/null 2>&1; then # Make filesystem if one doesn't exist
             mkfs.ext4 /dev/xvdf
           mkdirs /var/lib/docker/volumes || true
           mount /dev/xvdf /var/lib/docker/volumes

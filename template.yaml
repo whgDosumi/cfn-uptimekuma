@@ -43,7 +43,9 @@ Resources:
           dnf install docker -y
           systemctl start docker
           systemctl enable docker
-          sleep 30
+          ls /dev >> /home/ec2-user/log.txt
+          blkid /dev/xvdf >> /home/ec2-user/log.txt
+
           if ! blkid /dev/xvdf > /dev/null 2>&1; then # Make filesystem if one doesn't exist
             mkfs.ext4 /dev/xvdf
           fi

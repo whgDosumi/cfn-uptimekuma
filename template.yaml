@@ -47,8 +47,6 @@ Resources:
           if ! blkid /dev/xvdf > /dev/null 2>&1; then # Make filesystem if one doesn't exist
             mkfs.ext4 /dev/xvdf
           fi
-          mkdirs /var/lib/docker/volumes || true
-          mount /dev/xvdf /var/lib/docker/volumes
   
   SecurityGroup:
     Type: AWS::EC2::SecurityGroup

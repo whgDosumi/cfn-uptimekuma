@@ -39,17 +39,20 @@ Resources:
       UserData:
         Fn::Base64: !Sub | # The below bash script initializes the host. Runs on first launch.
           #!/bin/bash
+          # Install and set up Docker
           dnf update -y
           dnf install docker -y
           systemctl start docker
           systemctl enable docker
-          ls /dev >> /home/ec2-user/log.txt
-          blkid /dev/xvdf >> /home/ec2-user/log.txt
-
+          
+          # Initialize and mount the volume
+          mkdir /mnt/data
           if ! blkid /dev/xvdf > /dev/null 2>&1; then # Make filesystem if one doesn't exist
             mkfs.ext4 /dev/xvdf
           fi
-  
+          mount /dev/xvdf /mnt/data
+          echo "/dev/xvdf /mnt/data ext4 defaults 0 2" >> /etc/fstab
+
   SecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
